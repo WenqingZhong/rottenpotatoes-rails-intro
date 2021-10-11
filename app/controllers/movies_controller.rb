@@ -25,7 +25,6 @@ class MoviesController < ApplicationController
       @ratings_to_show=@all_ratings
     end 
    
-      
     if params[:sorting_para]
       if params[:sorting_para].keys[0]=='title'
         @movies = Movie.with_ratings(@ratings_to_show).order(:title)
