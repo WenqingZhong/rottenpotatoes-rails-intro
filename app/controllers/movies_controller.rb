@@ -11,22 +11,54 @@ class MoviesController < ApplicationController
     if params[:ratings].blank?
       @ratings_to_show=[]
       @rating_for_sort={}
+      
     else 
       @ratings_to_show=params[:ratings].keys
       @rating_for_sort=params[:ratings]
+      session[:ratings]=params[:ratings]
     end 
+    
     @movies = Movie.with_ratings(@ratings_to_show)
     
     if params[:sorting_para]
       if params[:sorting_para].keys[0]=='title'
         @movies = Movie.with_ratings(@ratings_to_show).order(:title)
         @Title_color = "bg-warning"
+        session[:sorting_para]={'title'=>1}
+        
       elsif params[:sorting_para].keys[0]=='date'
         @movies = Movie.with_ratings(@ratings_to_show).order(:release_date)
         @Date_color = "bg-warning"
+        session[:sorting_para]={'date'=>1}
       end 
-    end 
+        
+    elsif session[:sorting_para]&&session[:ratings]
+      if session[:sorting_para].keys[0]=='title'
+         @movies = Movie.with_ratings(session[:ratings].keys).order(:title)
+         @Title_color = "bg-warning"
+        
+      elsif session[:sorting_para].keys[0]=='date'
+        @movies = Movie.with_ratings(session[:ratings].keys).order(:release_date)
+        @Date_color = "bg-warning"
+      end
+    elsif  session[:sorting_para]
+      if session[:sorting_para].keys[0]=='title'
+         @movies = Movie.with_ratings(@ratings_to_show).order(:title)
+         @Title_color = "bg-warning"
+        
+      elsif session[:sorting_para].keys[0]=='date'
+        @movies = Movie.with_ratings(@ratings_to_show).order(:release_date)
+        @Date_color = "bg-warning"
+      end
     
+    elsif session[:ratings]
+      @movies = Movie.with_ratings(session[:ratings].keys)
+      @Date_color = "bg-warning"   
+      
+    else
+      @movies = Movie.with_ratings(@ratings_to_show)
+      session.delete(:sorting_para)
+    end 
     
      
   end
