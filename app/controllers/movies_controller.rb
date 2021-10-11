@@ -10,15 +10,18 @@ class MoviesController < ApplicationController
     @all_ratings=Movie.all_ratings
     if params[:ratings].blank?
       @ratings_to_show=[]
-      @rating_for_sort={}
-      
+      @rating_for_sort={}  
     else 
       @ratings_to_show=params[:ratings].keys
       @rating_for_sort=params[:ratings]
       session[:ratings]=params[:ratings]
     end 
     
-    @movies = Movie.with_ratings(@ratings_to_show)
+    if params[:ratings].blank?
+      @movies = Movie.with_ratings(@all_ratings)
+    else
+      @movies = Movie.with_ratings(@ratings_to_show)
+    end
     
     if params[:sorting_para]
       if params[:sorting_para].keys[0]=='title'
@@ -41,6 +44,7 @@ class MoviesController < ApplicationController
         @movies = Movie.with_ratings(session[:ratings].keys).order(:release_date)
         @Date_color = "bg-warning"
       end
+      
     elsif  session[:sorting_para]
       if session[:sorting_para].keys[0]=='title'
          @movies = Movie.with_ratings(@ratings_to_show).order(:title)
@@ -53,11 +57,11 @@ class MoviesController < ApplicationController
     
     elsif session[:ratings]
       @movies = Movie.with_ratings(session[:ratings].keys)
-      @Date_color = "bg-warning"   
+      
       
     else
       @movies = Movie.with_ratings(@ratings_to_show)
-      session.delete(:sorting_para)
+      session.clear
     end 
     
      
