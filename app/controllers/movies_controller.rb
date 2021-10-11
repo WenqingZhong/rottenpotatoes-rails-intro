@@ -23,15 +23,10 @@ class MoviesController < ApplicationController
       @rating_for_sort=session[:ratings]
     else
       @ratings_to_show=@all_ratings
-      @ratings_to_show = []
-      @rating_for_sort={}
     end 
    
-    if params[:sorting_para].blank? and session[:sorting_para].blank? 
-      @Date_color= "bg-white"
-      @Title_color= "bg-white"
       
-    elsif params[:sorting_para]
+    if params[:sorting_para]
       if params[:sorting_para].keys[0]=='title'
         @movies = Movie.with_ratings(@ratings_to_show).order(:title)
         @Title_color = "bg-warning"
