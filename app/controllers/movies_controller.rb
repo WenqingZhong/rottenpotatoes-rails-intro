@@ -18,11 +18,13 @@ class MoviesController < ApplicationController
       @ratings_to_show=params[:ratings].keys
       @rating_for_sort=params[:ratings]
       session[:ratings]=params[:ratings]
+      
     elsif session[:ratings]
       @ratings_to_show=session[:ratings].keys
       @rating_for_sort=session[:ratings]
     else
       @ratings_to_show=@all_ratings
+      
     end 
    
     if params[:sorting_para]
@@ -41,24 +43,16 @@ class MoviesController < ApplicationController
       if session[:sorting_para].keys[0]=='title'
          @movies = Movie.with_ratings(session[:ratings].keys).order(:title)
          @Title_color = "bg-warning"
-           
+         redirect_to action: :index, sorting_para:{'title'=>1}, ratings: session[:ratings]
       elsif session[:sorting_para].keys[0]=='date'
         @movies = Movie.with_ratings(session[:ratings].keys).order(:release_date)
-        @Date_color = "bg-warning"    
+        @Date_color = "bg-warning"   
+        redirect_to action: :index, sorting_para:{'date'=>1}, ratings: session[:ratings]
       end
-      
-    elsif  session[:sorting_para]
-      if session[:sorting_para].keys[0]=='title'
-         @movies = Movie.with_ratings(@ratings_to_show).order(:title)
-         @Title_color = "bg-warning"
-        
-      elsif session[:sorting_para].keys[0]=='date'
-        @movies = Movie.with_ratings(@ratings_to_show).order(:release_date)
-        @Date_color = "bg-warning"
-      end
-    
+ 
     elsif session[:ratings]
       @movies = Movie.with_ratings(session[:ratings].keys)
+      redirect_to action: :index, sorting_para:{'nothing'=>1}, ratings: session[:ratings]
       
         
     else
