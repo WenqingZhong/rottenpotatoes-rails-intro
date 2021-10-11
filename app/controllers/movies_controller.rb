@@ -38,7 +38,7 @@ class MoviesController < ApplicationController
         @Date_color = "bg-warning"
         session[:sorting_para]={'date'=>1}
       end 
-        
+    
     elsif session[:sorting_para]&&session[:ratings]
       if session[:sorting_para].keys[0]=='title'
          @movies = Movie.with_ratings(session[:ratings].keys).order(:title)
@@ -49,10 +49,22 @@ class MoviesController < ApplicationController
         @Date_color = "bg-warning"   
         redirect_to action: :index, sorting_para:{'date'=>1}, ratings: session[:ratings]
       end
- 
+    '''
+    elsif  session[:sorting_para]
+      if session[:sorting_para].keys[0]==title
+         @movies = Movie.with_ratings(@ratings_to_show).order(:title)
+         @Title_color = "bg-warning"
+         redirect_to action: :index, sorting_para:{titel=>1}, ratings: Hash[@ratings_to_show.collect { |item| [item, 1] }]
+        
+      elsif session[:sorting_para].keys[0]==date
+        @movies = Movie.with_ratings(@ratings_to_show).order(:release_date)
+        @Date_color = "bg-warning"
+        redirect_to action: :index, sorting_para:{titel=>1}, ratings: Hash[@ratings_to_show.collect { |item| [item, 1] }]
+      end
+    '''
     elsif session[:ratings]
       @movies = Movie.with_ratings(session[:ratings].keys)
-      redirect_to action: :index, sorting_para:{'nothing'=>1}, ratings: session[:ratings]
+      #redirect_to action: :index, sorting_para:{'nothing'=>1}, ratings: session[:ratings]
       
         
     else
