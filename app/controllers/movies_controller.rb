@@ -8,22 +8,30 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings=Movie.all_ratings
-    if params[:ratings].blank?
-      @ratings_to_show=[]
-      @rating_for_sort={}  
-    else 
+    
+    if params[:commit] == "Refresh"&&params[:ratings].blank?
+      session.delete(:ratings)
+      @ratings_to_show = []
+      @rating_for_sort={}
+  
+    elsif params[:ratings]
       @ratings_to_show=params[:ratings].keys
       @rating_for_sort=params[:ratings]
       session[:ratings]=params[:ratings]
-    end 
-    
-    if params[:ratings].blank?
-      @movies = Movie.with_ratings(@all_ratings)
+    elsif session[:ratings]
+      @ratings_to_show=session[:ratings].keys
+      @rating_for_sort=session[:ratings]
     else
-      @movies = Movie.with_ratings(@ratings_to_show)
-    end
-    
-    if params[:sorting_para]
+      @ratings_to_show=@all_ratings
+      @ratings_to_show = []
+      @rating_for_sort={}
+    end 
+   
+    if params[:sorting_para].blank? and session[:sorting_para].blank? 
+      @Date_color= "bg-white"
+      @Title_color= "bg-white"
+      
+    elsif params[:sorting_para]
       if params[:sorting_para].keys[0]=='title'
         @movies = Movie.with_ratings(@ratings_to_show).order(:title)
         @Title_color = "bg-warning"
@@ -39,10 +47,10 @@ class MoviesController < ApplicationController
       if session[:sorting_para].keys[0]=='title'
          @movies = Movie.with_ratings(session[:ratings].keys).order(:title)
          @Title_color = "bg-warning"
-        
+           
       elsif session[:sorting_para].keys[0]=='date'
         @movies = Movie.with_ratings(session[:ratings].keys).order(:release_date)
-        @Date_color = "bg-warning"
+        @Date_color = "bg-warning"    
       end
       
     elsif  session[:sorting_para]
@@ -58,10 +66,12 @@ class MoviesController < ApplicationController
     elsif session[:ratings]
       @movies = Movie.with_ratings(session[:ratings].keys)
       
-      
+        
     else
       @movies = Movie.with_ratings(@ratings_to_show)
       session.clear
+      @Date_color="bg-white"
+      @Title_color="bg-white"
     end 
     
      
